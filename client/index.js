@@ -28,8 +28,8 @@ const Root = () => {
     <ApolloProvider client={client}>
       <Router>
         <Switch>
-          <Layout exact path="/" component={Dashboard} />
-          <Layout exact path="/dashboard" component={Dashboard} />
+          <Layout exact requiresAuthentication path="/dashboard" component={Dashboard} />
+          <Layout exact requiresAuthentication path="/" component={Dashboard} />
           <Layout exact path="/signup" component={Form} />
           <Layout exact path="/login" component={Form} />
         </Switch>

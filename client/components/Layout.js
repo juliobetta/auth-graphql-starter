@@ -1,16 +1,25 @@
 import React, { Fragment, Component } from 'react';
 import { Route } from 'react-router';
 import Header from './Header';
+import WithSession from './WithSession';
 
 export default class extends Component {
   render() {
-    const { component: WrappedComponent, ...rest } = this.props;
+    const {
+      component: WrappedComponent,
+      requiresAuthentication = false,
+      ...rest
+    } = this.props;
 
     return (
-      <Route
-        {...rest}
-        render={this.renderComponent(WrappedComponent)}
-      />
+      <WithSession requiresAuthentication={!!requiresAuthentication}>
+        {() => (
+          <Route
+            {...rest}
+            render={this.renderComponent(WrappedComponent)}
+          />
+        )}
+      </WithSession>
     );
   }
 
@@ -22,6 +31,7 @@ export default class extends Component {
   renderComponent = WrappedComponent => matchProps => (
     <Fragment>
       <Header />
+
       <div className="container">
         <WrappedComponent {...matchProps} location={this.props.location} />
       </div>

@@ -6,12 +6,12 @@ import { getCurrentUser } from '../graphql/auth';
 
 class WithSession extends Component {
   static propTypes = {
-    requireAuthentication: PropTypes.bool,
+    requiresAuthentication: PropTypes.bool,
     children: PropTypes.func.isRequired
   }
 
   render() {
-    const { requireAuthentication } = this.props;
+    const { requiresAuthentication } = this.props;
 
     return (
       <Query query={getCurrentUser}>
@@ -20,11 +20,11 @@ class WithSession extends Component {
             return null;
           }
 
-          if(requireAuthentication && !data.user) {
+          if(requiresAuthentication && !data.user) {
             return <Redirect to="/login" />
           }
 
-          if(!requireAuthentication && data.user) {
+          if(!requiresAuthentication && data.user) {
             return <Redirect to="/dashboard" />
           }
 

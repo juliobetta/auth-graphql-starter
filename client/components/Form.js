@@ -3,7 +3,6 @@ import { get } from 'lodash';
 import { Redirect } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { signUp, getCurrentUser, login } from '../graphql/auth';
-import WithSession from './WithSession';
 
 class Form extends Component {
   state = {
@@ -17,43 +16,39 @@ class Form extends Component {
     const { email, password } = this.state;
 
     return (
-      <WithSession requireAuthentication={false}>
-        {() => (
-          <Mutation mutation={mutation} update={this.onMutationSuccess}>
-            {fn => (
-              <div className="row">
-                <h3>{title}</h3>
+      <Mutation mutation={mutation} update={this.onMutationSuccess}>
+        {fn => (
+          <div className="row">
+            <h3>{title}</h3>
 
-                <form onSubmit={this.onSubmit(fn)} className="col s6">
-                  <div className="input-field">
-                    <input
-                      placeholder="Email"
-                      type="email"
-                      onChange={this.onChangeField('email')}
-                      value={email}
-                    />
-                  </div>
-
-                  <div className="input-field">
-                    <input
-                      placeholder="Password"
-                      type="password"
-                      onChange={this.onChangeField('password')}
-                      value={password}
-                    />
-                  </div>
-
-                  <div className="errors">
-                    {this.state.errors.map(error => <div key={error}>{error}</div>)}
-                  </div>
-
-                  <button className="btn">SUBMIT</button>
-                </form>
+            <form onSubmit={this.onSubmit(fn)} className="col s6">
+              <div className="input-field">
+                <input
+                  placeholder="Email"
+                  type="email"
+                  onChange={this.onChangeField('email')}
+                  value={email}
+                />
               </div>
-            )}
-          </Mutation>
+
+              <div className="input-field">
+                <input
+                  placeholder="Password"
+                  type="password"
+                  onChange={this.onChangeField('password')}
+                  value={password}
+                />
+              </div>
+
+              <div className="errors">
+                {this.state.errors.map(error => <div key={error}>{error}</div>)}
+              </div>
+
+              <button className="btn">SUBMIT</button>
+            </form>
+          </div>
         )}
-      </WithSession>
+      </Mutation>
     );
   }
 
