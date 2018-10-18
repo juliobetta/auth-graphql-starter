@@ -8,6 +8,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import Layout from './components/Layout';
 import Form from './components/Form';
+import Dashboard from './components/Dashboard';
 
 const client = new ApolloClient({
   /**
@@ -27,7 +28,8 @@ const Root = () => {
     <ApolloProvider client={client}>
       <Router>
         <Switch>
-          <Layout exact path="/" component={() => <div>YELLOOWWWW</div>} />
+          <Layout exact path="/" component={Dashboard} />
+          <Layout exact path="/dashboard" component={Dashboard} />
           <Layout exact path="/signup" component={Form} />
           <Layout exact path="/login" component={Form} />
         </Switch>

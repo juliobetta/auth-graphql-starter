@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { get } from 'lodash';
+import { Redirect } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { signUp, getCurrentUser, login } from '../graphql/auth';
+import WithSession from './WithSession';
 
 class Form extends Component {
   state = {
     email: '',
-    password: ''
+    password: '',
+    errors: []
   };
 
   render() {
@@ -14,27 +17,43 @@ class Form extends Component {
     const { email, password } = this.state;
 
     return (
-      <Mutation mutation={mutation} refetchQueries={[{ query: getCurrentUser }]}>
-        {fn => (
-          <div className="row">
-            <h3>{title}</h3>
+      <WithSession requireAuthentication={false}>
+        {() => (
+          <Mutation mutation={mutation} update={this.onMutationSuccess}>
+            {fn => (
+              <div className="row">
+                <h3>{title}</h3>
 
-            <form onSubmit={this.onSubmit(fn)} className="col s6">
-              <div className="input-field">
-                <label>Email</label>
-                <input type="email" onChange={this.onChangeField('email')} value={email} />
+                <form onSubmit={this.onSubmit(fn)} className="col s6">
+                  <div className="input-field">
+                    <input
+                      placeholder="Email"
+                      type="email"
+                      onChange={this.onChangeField('email')}
+                      value={email}
+                    />
+                  </div>
+
+                  <div className="input-field">
+                    <input
+                      placeholder="Password"
+                      type="password"
+                      onChange={this.onChangeField('password')}
+                      value={password}
+                    />
+                  </div>
+
+                  <div className="errors">
+                    {this.state.errors.map(error => <div key={error}>{error}</div>)}
+                  </div>
+
+                  <button className="btn">SUBMIT</button>
+                </form>
               </div>
-
-              <div className="input-field">
-                <label>Password</label>
-                <input type="password" onChange={this.onChangeField('password')} value={password}/>
-              </div>
-
-              <button className="btn">SUBMIT</button>
-            </form>
-          </div>
+            )}
+          </Mutation>
         )}
-      </Mutation>
+      </WithSession>
     );
   }
 
@@ -58,7 +77,18 @@ class Form extends Component {
 
     return mutation({
       variables: { email, password }
-    }).then(() => this.props.history.replace('/'));
+    })
+      .then(() => this.props.history.replace('/'))
+      .catch(response =>
+        this.setState({ errors: response.graphQLErrors.map(error => error.message) })
+      );
+  }
+
+  onMutationSuccess = (cache, { data }) => {
+    cache.writeQuery({
+      query: getCurrentUser,
+      data: { user: Object.values(data)[0] }
+    });
   }
 
   onChangeField = field => event => this.setState({ [field]: event.target.value });
